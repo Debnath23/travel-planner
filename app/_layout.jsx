@@ -4,6 +4,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
+import { CreateTripProvider } from "@/context/CreateTripContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,13 +26,13 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <CreateTripProvider>
       <Stack>
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="dark" />
-    </>
+    </CreateTripProvider>
   );
 }

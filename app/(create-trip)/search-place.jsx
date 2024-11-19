@@ -1,15 +1,17 @@
-import { StyleSheet, Text, View, TextInput } from "react-native";
-import React, { useLayoutEffect } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import React, { useContext, useLayoutEffect, useState } from "react";
 import { Colors } from "@/constants/Colors";
-import { useNavigation } from "expo-router";
-import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
-import 'react-native-get-random-values';
-import { v4 as uuidv4 } from "uuid";
+import GoMapsAutocomplete from "@/hooks/GoMapsAutocomplete";
+import { useNavigation, useRouter } from "expo-router";
+import { CreateTripContext } from "@/context/CreateTripContext";
 
-uuidv4();
+const api_key = process.env.EXPO_PUBLIC_GO_MAPS_API_KEY || "";
 
 export default function SearchPlace() {
   const navigation = useNavigation();
+  const { tripData, setTripData } = useContext(CreateTripContext);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -18,22 +20,41 @@ export default function SearchPlace() {
     });
   }, [navigation]);
 
+  const handlePlaceSelect = async (place) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://maps.gomaps.pro/maps/api/place/details/json?place_id=${place.place_id}&key=${api_key}`
+      );
+      const data = await response.json();
+      if (data.result) {
+        setTripData({
+          locationInfo: {
+            name: place.description,
+            coordinates: data.result.geometry.location,
+            photoRef: data.result.photos[0].photo_reference,
+            url: data.result.url,
+          },
+        });
+        router.push("/select-traveler");
+      } else {
+        setTripData(null);
+      }
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      setTripData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Search Place</Text>
-      {/* <TextInput style={styles.input} placeholder="Type your destination..." /> */}
-      <GooglePlacesAutocomplete
-        placeholder="Search"
-        fetchDetails={true}
-        onPress={(data, details = null) => {
-          console.log(data, details);
-          console.log(">>>>>>>>>>>>>>>>>>>");
-          
-        }}
-        query={{
-          key: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
-          language: "en",
-        }}
+      <GoMapsAutocomplete
+        apiKey={api_key}
+        placeholder="Search for places"
+        onPlaceSelect={handlePlaceSelect}
       />
     </View>
   );
@@ -51,12 +72,5 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontFamily: "outfit-bold",
     marginBottom: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: Colors.GRAY,
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 20,
   },
 });
