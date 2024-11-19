@@ -29,7 +29,7 @@ const SignIn = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        router.replace("//mytrip");
+        router.replace("/mytrip");
       })
       .catch((error) => {
         const errorMessage = error.message;
@@ -60,7 +60,7 @@ const SignIn = () => {
         placeholderTextColor={Colors.GRAY}
         style={styles.input}
         value={email}
-        onChangeText={(value) => setEmail(value)}
+        onChangeText={(value) => setEmail(value.trim())}
       />
       {/* Password Input */}
       <TextInput
@@ -69,7 +69,7 @@ const SignIn = () => {
         secureTextEntry
         value={password}
         style={styles.input}
-        onChangeText={(value) => setPassword(value)}
+        onChangeText={(value) => setPassword(value.trim())}
       />
 
       {/* Sign In Button */}

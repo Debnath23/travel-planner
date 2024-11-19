@@ -11,7 +11,7 @@ export default function Index(props: Props) {
   const user = auth.currentUser;
 
   if (user) {
-    return <Redirect href={"//mytrip"} />;
+    return <Redirect href={"/mytrip"} />;
   };
 
   return (

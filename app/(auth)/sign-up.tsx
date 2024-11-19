@@ -36,7 +36,7 @@ const SignUp = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        router.replace("//mytrip");
+        router.replace("/mytrip");
       })
       .catch((error) => {
         const errorMessage = error.message;
