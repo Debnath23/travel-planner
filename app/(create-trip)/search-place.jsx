@@ -9,7 +9,7 @@ const api_key = process.env.EXPO_PUBLIC_GO_MAPS_API_KEY || "";
 
 export default function SearchPlace() {
   const navigation = useNavigation();
-  const { tripData, setTripData } = useContext(CreateTripContext);
+  const { setTripData } = useContext(CreateTripContext);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 

@@ -8,12 +8,12 @@ import {
 import { Colors } from "@/constants/Colors";
 import { useNavigation, useRouter } from "expo-router";
 import { useContext, useEffect, useLayoutEffect, useState } from "react";
-import { TravelerOptions } from "@/constants/Options";
+import { budgetOptions } from "@/constants/Options";
 import OptionCard from "@/components/OptionCard";
 import { CreateTripContext } from "@/context/CreateTripContext";
 
-const SelectTraveler = () => {
-  const [selectedTraveler, setSelectedTraveler] = useState();
+const SelectBudget = () => {
+  const [selectedBudget, setSelectedBudget] = useState();
   const { tripData, setTripData } = useContext(CreateTripContext);
   const navigation = useNavigation();
   const router = useRouter();
@@ -29,13 +29,13 @@ const SelectTraveler = () => {
   useEffect(() => {
     setTripData({
       ...tripData,
-      traveler: selectedTraveler,
+      buget: selectedBudget,
     });
-  }, [selectedTraveler]);
-  
+  }, [selectedBudget]);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Who's Traveling</Text>
+      <Text style={styles.title}>Budget</Text>
       <View>
         <Text
           style={{
@@ -43,17 +43,17 @@ const SelectTraveler = () => {
             fontSize: 22,
           }}
         >
-          Choose your traveler
+          Choose spending hobits for your trip
         </Text>
       </View>
       <FlatList
-        data={TravelerOptions}
+        data={budgetOptions}
         renderItem={({ item }) => (
           <TouchableOpacity
             key={item.id}
-            onPress={() => setSelectedTraveler(item)}
+            onPress={() => setSelectedBudget(item)}
           >
-            <OptionCard item={item} selectedTraveler={selectedTraveler} />
+            <OptionCard item={item} selectedTraveler={selectedBudget} />
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id.toString()}
@@ -61,7 +61,7 @@ const SelectTraveler = () => {
 
       <TouchableOpacity
         style={styles.btn}
-        onPress={() => router.push("/select-date")}
+        onPress={() => router.push("/mytrip")}
       >
         <Text style={styles.btnText}>Continue</Text>
       </TouchableOpacity>
@@ -69,7 +69,7 @@ const SelectTraveler = () => {
   );
 };
 
-export default SelectTraveler;
+export default SelectBudget;
 
 const styles = StyleSheet.create({
   container: {
