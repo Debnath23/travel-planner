@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
+import React, { useContext, useLayoutEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -11,8 +11,6 @@ import { Colors } from "@/constants/Colors";
 import { CreateTripContext } from "@/context/CreateTripContext";
 import CalendarPicker from "react-native-calendar-picker";
 import moment from "moment";
-import { differenceInDays } from "date-fns";
-
 const SelectDate = () => {
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
@@ -36,8 +34,6 @@ const SelectDate = () => {
       return;
     }
 
-    const totalNoOfDays = differenceInDays(endDate, startDate);
-
     if (selectedStartDate && selectedEndDate) {
       setTripData({
         ...tripData,
@@ -51,9 +47,10 @@ const SelectDate = () => {
 
   const minDate = new Date();
   const maxDate = new Date(2025, 6, 3);
-  const startDate = selectedStartDate ? selectedStartDate.toString() : "";
-  const endDate = selectedEndDate ? selectedEndDate.toString() : "";
-
+  const startDate = selectedStartDate ? moment(selectedStartDate).format("DD MMM YYYY") : "";
+  const endDate = selectedEndDate ? moment(selectedEndDate).format("DD MMM YYYY") : "";
+  const totalNoOfDays = moment(selectedEndDate).diff(moment(selectedStartDate), "days");
+  
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "",
@@ -61,10 +58,6 @@ const SelectDate = () => {
       headerShown: true,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    onDateSelectionContinue();
-  }, [selectedStartDate, selectedEndDate]);
 
   return (
     <View style={styles.container}>

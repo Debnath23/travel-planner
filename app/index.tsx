@@ -10,7 +10,7 @@ export default function Index(props: Props) {
   const router = useRouter();
   const user = auth.currentUser;
 
-  if (!user) {
+  if (user) {
     return <Redirect href={"/mytrip"} />;
   };
 

@@ -4,10 +4,11 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  ToastAndroid,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useNavigation, useRouter } from "expo-router";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
 import { TravelerOptions } from "@/constants/Options";
 import OptionCard from "@/components/OptionCard";
 import { CreateTripContext } from "@/context/CreateTripContext";
@@ -18,6 +19,21 @@ const SelectTraveler = () => {
   const navigation = useNavigation();
   const router = useRouter();
 
+  const onTravelerSelectionContinue = () => {
+    if (!selectedTraveler) {
+      ToastAndroid.show("Please select traveler", ToastAndroid.LONG);
+      return;
+    }
+
+    if (selectedTraveler) {
+      setTripData({
+        ...tripData,
+        traveler: selectedTraveler,
+      });
+      router.push("/select-date");
+    }
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "",
@@ -26,13 +42,6 @@ const SelectTraveler = () => {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    setTripData({
-      ...tripData,
-      traveler: selectedTraveler,
-    });
-  }, [selectedTraveler]);
-  
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Who's Traveling</Text>
@@ -61,7 +70,7 @@ const SelectTraveler = () => {
 
       <TouchableOpacity
         style={styles.btn}
-        onPress={() => router.push("/select-date")}
+        onPress={onTravelerSelectionContinue}
       >
         <Text style={styles.btnText}>Continue</Text>
       </TouchableOpacity>

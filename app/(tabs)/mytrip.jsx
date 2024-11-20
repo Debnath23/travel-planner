@@ -1,12 +1,47 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import { Colors } from "@/constants/Colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { auth, db } from "@/config/firebaseConfig";
+import { collection, doc, getDocs, query, where } from "firebase/firestore";
 
 export default function MyTrip() {
   const [userTrips, setUserTrips] = useState([]);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const user = auth.currentUser;
+
+  const getMyTrips = async () => {
+    try {
+      setUserTrips([]);
+      setLoading(true);
+
+      const dbquery = query(
+        collection(db, "UserTrip"),
+        where("userEmail", "==", user?.email)
+      );
+      const querySnapshot = await getDocs(dbquery);
+
+      querySnapshot.forEach((doc) => {
+        setUserTrips((prev) => [...prev, doc.data()]);
+      });
+    } catch (error) {
+      ToastAndroid.show("Opps! Something went worng.", ToastAndroid.LONG);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getMyTrips();
+  }, [user]);
 
   return (
     <View
@@ -14,9 +49,12 @@ export default function MyTrip() {
         height: "100%",
       }}
     >
+      {loading && <ActivityIndicator size={"large"} color={Colors.PRIMARY} />}
       <View style={styles.label}>
         <Text style={styles.labelText}>My Trips</Text>
-        <Ionicons name="add-circle" size={43} color="black" />
+        <TouchableOpacity onPress={() => router.push("/search-place")}>
+          <Ionicons name="add-circle" size={43} color="black" />
+        </TouchableOpacity>
       </View>
       {userTrips?.length === 0 ? (
         <View style={styles.container}>
@@ -39,7 +77,7 @@ export default function MyTrip() {
           </TouchableOpacity>
         </View>
       ) : (
-        userTrips.map((trip) => <View>trip</View>)
+        userTrips.map((trip) => <View>{trip}</View>)
       )}
     </View>
   );

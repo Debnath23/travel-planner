@@ -4,10 +4,11 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  ToastAndroid,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useNavigation, useRouter } from "expo-router";
-import { useContext, useEffect, useLayoutEffect, useState } from "react";
+import { useContext, useLayoutEffect, useState } from "react";
 import { budgetOptions } from "@/constants/Options";
 import OptionCard from "@/components/OptionCard";
 import { CreateTripContext } from "@/context/CreateTripContext";
@@ -18,6 +19,21 @@ const SelectBudget = () => {
   const navigation = useNavigation();
   const router = useRouter();
 
+  const onBudgetSelectionContinue = () => {
+    if (!selectedBudget) {
+      ToastAndroid.show("Please choose your budget", ToastAndroid.LONG);
+      return;
+    }
+
+    if (selectedBudget) {
+      setTripData({
+        ...tripData,
+        budget: selectedBudget.title,
+      });
+      router.push("/review-trip");
+    }
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: "",
@@ -25,13 +41,6 @@ const SelectBudget = () => {
       headerShown: true,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    setTripData({
-      ...tripData,
-      buget: selectedBudget,
-    });
-  }, [selectedBudget]);
 
   return (
     <View style={styles.container}>
@@ -59,10 +68,7 @@ const SelectBudget = () => {
         keyExtractor={(item) => item.id.toString()}
       />
 
-      <TouchableOpacity
-        style={styles.btn}
-        onPress={() => router.push("/mytrip")}
-      >
+      <TouchableOpacity style={styles.btn} onPress={onBudgetSelectionContinue}>
         <Text style={styles.btnText}>Continue</Text>
       </TouchableOpacity>
     </View>
