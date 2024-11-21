@@ -20,34 +20,44 @@ const GenerateTrip = () => {
   const generateTrip = async () => {
     try {
       setLoading(true);
-      const FINAL_PROMPT = PROMPT.replace(
-        "{location}",
-        tripData?.locationInfo?.name
-      )
+  
+      const FINAL_PROMPT = PROMPT.replace("{location}", tripData?.locationInfo?.name)
         .replace("{totalDays}", tripData?.totalNoOfDays)
         .replace("{totalNight}", tripData?.totalNoOfDays - 1)
         .replace("{traveler}", tripData?.traveler?.title)
-        .replace("{budget}", tripData?.budget)
-        .replace("{totalDays}", tripData?.totalNoOfDays)
-        .replace("{totalNight}", tripData?.totalNoOfDays - 1);
-
+        .replace("{budget}", tripData?.budget);
+  
+      console.log("Generated FINAL_PROMPT:", FINAL_PROMPT);
+  
       const result = await chatSession.sendMessage(FINAL_PROMPT);
       const responseText = await result.response.text();
-      const tripResponse = JSON.parse(responseText);
-      console.log(tripResponse);
-
-      const docId = new uuid();
-      await setDoc(doc(db, "UserTrip", docId), {
-        docId: docId,
-        userEmail: user.email,
-        tripPlan: tripResponse,
-        tripData: JSON.stringify(tripData),
-      });
-
-      router.replace("/mytrip");
+  
+      console.log("Raw API response:", responseText);
+  
+      if (!result.response.ok) {
+        throw new Error(`API error: ${result.response.status}`);
+      }
+  
+      try {
+        const tripResponse = JSON.parse(responseText);
+        console.log("Parsed tripResponse:", tripResponse);
+  
+        const docId = new uuid();
+        await setDoc(doc(db, "UserTrip", docId), {
+          docId: docId,
+          userEmail: user.email,
+          tripPlan: tripResponse,
+          tripData: JSON.stringify(tripData),
+        });
+  
+        router.replace("/mytrip");
+      } catch (jsonError) {
+        console.error("JSON parsing error:", jsonError, "Response text:", responseText);
+        throw new Error("Failed to parse API response as JSON.");
+      }
     } catch (error) {
-      console.log(error);
-      ToastAndroid.show('Opps! Something went worng. Please try later', ToastAndroid.LONG);
+      console.error("Error in generateTrip:", error);
+      ToastAndroid.show('Oops! Something went wrong. Please try later.', ToastAndroid.LONG);
       router.replace("/mytrip");
     } finally {
       setLoading(false);

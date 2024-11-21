@@ -50,4 +50,48 @@ export const budgetOptions = [
   },
 ];
 
-export const PROMPT = "Generate Travel Plan for Location: {location}, for {totalDays} Days and {totalNight} Night for {traveler} with a {budget} budget with a Flight details, Flight Price with Booking url, Hotels options list with HotelName, Hotel address, Price, hotel image url, geo coordinates, rating, descriptions and Places to visit nearby with placeName, Place Details, Place Image Url, Geo Coordinates, ticket Pricing, Time t travel each of the location for {totalDays} days and {totalNight} night with each day plan with best time to visit in JSON format."
+export const PROMPT =
+  "Generate Travel Plan for Location: {location}, for {totalDays} Days and {totalNight} Night for {traveler} with a {budget} budget with a Flight details, Flight Price with Booking url, Hotels options list with HotelName, Hotel address, Price, hotel image url, geo coordinates, rating, descriptions and Places to visit nearby with placeName, Place Details, Place Image Url, Geo Coordinates, ticket Pricing, Time t travel each of the location for {totalDays} days and {totalNight} night with each day plan with best time to visit in JSON format.";
+
+export const userTrip = [
+  {
+    img: require("@/assets/images/img1.jpg"),
+    tripDetails: {
+      destination: "Dubai, United Arab Emirates",
+      duration: "6 Days / 5 Nights",
+      travelerCount: 1,
+      budget: "Luxury",
+      bestTimetoVisit: "October to April (avoid summer heat)",
+    },
+  },
+  {
+    img: require("@/assets/images/img2.jpg"),
+    tripDetails: {
+      destination: "New York, USA",
+      duration: {
+        days: 1,
+        nights: 1,
+      },
+      budget: "Luxury",
+      travelers: "Family",
+    },
+  },
+  {
+    img: require("@/assets/images/img3.jpg"),
+    tripDetails: {
+      destination: "Kolkata, West Bengal, India",
+      duration: "3 Days, 2 Nights",
+      budget: "Moderate",
+      travelers: "Friends",
+    },
+  },
+  {
+    img: require("@/assets/images/img4.jpg"),
+    tripDetails: {
+      destination: "Derjiling, West Bengal, India",
+      duration: "3 Days, 2 Nights",
+      budget: "Moderate",
+      travelers: "Friends",
+    },
+  },
+];

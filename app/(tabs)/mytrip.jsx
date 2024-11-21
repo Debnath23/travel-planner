@@ -6,11 +6,13 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
+import { userTrip } from "@/constants/Options";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { auth, db } from "@/config/firebaseConfig";
 import { collection, doc, getDocs, query, where } from "firebase/firestore";
+import UserTripList from '@/components/UserTripList'
 
 export default function MyTrip() {
   const [userTrips, setUserTrips] = useState([]);
@@ -47,6 +49,7 @@ export default function MyTrip() {
     <View
       style={{
         height: "100%",
+        backgroundColor: Colors.WHITE
       }}
     >
       {loading && <ActivityIndicator size={"large"} color={Colors.PRIMARY} />}
@@ -56,7 +59,7 @@ export default function MyTrip() {
           <Ionicons name="add-circle" size={43} color="black" />
         </TouchableOpacity>
       </View>
-      {userTrips?.length === 0 ? (
+      {userTrips?.length !== 0 ? (
         <View style={styles.container}>
           <Ionicons
             name="location-sharp"
@@ -77,7 +80,7 @@ export default function MyTrip() {
           </TouchableOpacity>
         </View>
       ) : (
-        userTrips.map((trip) => <View>{trip}</View>)
+        <UserTripList userTrips={userTrip} />
       )}
     </View>
   );
