@@ -6,50 +6,44 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Colors } from "@/constants/Colors";
-import { userTrip } from "@/constants/Options";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { auth, db } from "@/config/firebaseConfig";
-import { collection, doc, getDocs, query, where } from "firebase/firestore";
-import UserTripList from '@/components/UserTripList'
+import UserTripList from "@/components/UserTripList";
+import axiosInstance from "@/config/axiosInstance";
 
 export default function MyTrip() {
   const [userTrips, setUserTrips] = useState([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const user = auth.currentUser;
-
-  const getMyTrips = async () => {
-    try {
-      setUserTrips([]);
-      setLoading(true);
-
-      const dbquery = query(
-        collection(db, "UserTrip"),
-        where("userEmail", "==", user?.email)
-      );
-      const querySnapshot = await getDocs(dbquery);
-
-      querySnapshot.forEach((doc) => {
-        setUserTrips((prev) => [...prev, doc.data()]);
-      });
-    } catch (error) {
-      ToastAndroid.show("Opps! Something went worng.", ToastAndroid.LONG);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
+    const getMyTrips = async () => {
+      try {
+        setUserTrips([]);
+        setLoading(true);
+
+        const response = await axiosInstance.get("/trip");
+
+        if (response.status === 200) {
+          setUserTrips(response.data.trips || response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching trips:", error);
+        ToastAndroid.show("Oops! Something went wrong.", ToastAndroid.LONG);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     getMyTrips();
-  }, [user]);
+  }, []);
 
   return (
     <View
       style={{
         height: "100%",
-        backgroundColor: Colors.WHITE
+        backgroundColor: Colors.WHITE,
       }}
     >
       {loading && <ActivityIndicator size={"large"} color={Colors.PRIMARY} />}
@@ -59,7 +53,7 @@ export default function MyTrip() {
           <Ionicons name="add-circle" size={43} color="black" />
         </TouchableOpacity>
       </View>
-      {userTrips?.length !== 0 ? (
+      {userTrips?.length == 0 ? (
         <View style={styles.container}>
           <Ionicons
             name="location-sharp"
@@ -80,7 +74,7 @@ export default function MyTrip() {
           </TouchableOpacity>
         </View>
       ) : (
-        <UserTripList userTrips={userTrip} />
+        <UserTripList userTrips={userTrips} />
       )}
     </View>
   );

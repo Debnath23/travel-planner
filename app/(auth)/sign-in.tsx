@@ -6,37 +6,55 @@ import {
   TouchableOpacity,
   StyleSheet,
   ToastAndroid,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/config/firebaseConfig";
+import axiosInstance from "@/config/axiosInstance";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const navigation = useNavigation();
 
-  const onSignIn = () => {
-    if (!email && !password) {
-      ToastAndroid.show("Please enter all details.", ToastAndroid.BOTTOM);
+  const onSignIn = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+
+    if (!email) {
+      ToastAndroid.show("Email is required.", ToastAndroid.BOTTOM);
       return;
     }
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
+    if (!password) {
+      ToastAndroid.show("Password is required.", ToastAndroid.BOTTOM);
+      return;
+    }
+
+    try {
+      const requestBody = { email, password };
+      const response = await axiosInstance.post("/auth/login", requestBody);
+
+      if (response.status === 201) {
+        console.log("Login successful:", response.data);
+        const { accessToken, refreshToken } = response.data;
+
+        await AsyncStorage.setItem("accessToken", accessToken);
+        await AsyncStorage.setItem("refreshToken", refreshToken);
+
         router.replace("/mytrip");
-      })
-      .catch((error) => {
-        const errorMessage = error.message;
-        if (errorMessage) {
-          ToastAndroid.show("Invalid Credentials!", ToastAndroid.BOTTOM);
-        }
-      });
+      }
+    } catch (error: any) {
+      console.log(error);
+      ToastAndroid.show("Login failed. Please try again.", ToastAndroid.BOTTOM);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -46,45 +64,56 @@ const SignIn = () => {
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.push("/")} style={styles.backBtn}>
-        <Ionicons name="arrow-back" size={24} color="black" />
-      </TouchableOpacity>
-      <Text style={styles.header}>Let's Sign You In</Text>
-      <Text style={styles.subHeader}>Welcome Back</Text>
-      <Text style={styles.subHeader}>You've been missed!</Text>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={styles.container}>
+          <TouchableOpacity
+            onPress={() => router.push("/")}
+            style={styles.backBtn}
+          >
+            <Ionicons name="arrow-back" size={24} color="black" />
+          </TouchableOpacity>
+          <Text style={styles.header}>Let's Sign You In</Text>
+          <Text style={styles.subHeader}>Welcome Back</Text>
+          <Text style={styles.subHeader}>You've been missed!</Text>
 
-      {/* Email Input */}
-      <TextInput
-        placeholder="Email"
-        placeholderTextColor={Colors.GRAY}
-        style={styles.input}
-        value={email}
-        onChangeText={(value) => setEmail(value.trim())}
-      />
-      {/* Password Input */}
-      <TextInput
-        placeholder="Password"
-        placeholderTextColor={Colors.GRAY}
-        secureTextEntry
-        value={password}
-        style={styles.input}
-        onChangeText={(value) => setPassword(value.trim())}
-      />
+          {/* Email Input */}
+          <TextInput
+            placeholder="Email"
+            placeholderTextColor={Colors.GRAY}
+            style={styles.input}
+            value={email}
+            onChangeText={(value) => setEmail(value.trim())}
+          />
+          {/* Password Input */}
+          <TextInput
+            placeholder="Password"
+            placeholderTextColor={Colors.GRAY}
+            secureTextEntry
+            value={password}
+            style={styles.input}
+            onChangeText={(value) => setPassword(value)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
 
-      {/* Sign In Button */}
-      <TouchableOpacity style={styles.button} onPress={onSignIn}>
-        <Text style={styles.buttonText}>Sign In</Text>
-      </TouchableOpacity>
+          {/* Sign In Button */}
+          <TouchableOpacity style={styles.button} onPress={onSignIn}>
+            <Text style={styles.buttonText}>
+              {isLoading ? "Loading..." : "Sign In"}
+            </Text>
+          </TouchableOpacity>
 
-      {/* Create Account Button */}
-      <TouchableOpacity
-        style={styles.secondaryButton}
-        onPress={() => router.push("/sign-up")}
-      >
-        <Text style={styles.secondaryButtonText}>Create New Account</Text>
-      </TouchableOpacity>
-    </View>
+          {/* Create Account Button */}
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => router.push("/sign-up")}
+          >
+            <Text style={styles.secondaryButtonText}>Create New Account</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

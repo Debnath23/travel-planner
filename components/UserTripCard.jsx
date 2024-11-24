@@ -5,12 +5,24 @@ import { Colors } from "@/constants/Colors";
 const UserTripCard = ({ trip }) => {
   return (
     <View style={styles.container}>
-      <Image source={trip?.img} style={styles.img} />
+      {trip?.locationInfo?.photoRef ? (
+        <Image
+          source={{
+            uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${trip?.locationInfo?.photoRef}&key=${process.env.EXPO_PUBLIC_GO_MAPS_API_KEY}`,
+          }}
+          style={styles.img}
+        />
+      ) : (
+        <Image
+          source={require("@/assets/images/travel.jpg")}
+          style={styles.img}
+        />
+      )}
       <View>
-        <Text style={styles.destination}>{trip?.tripDetails?.destination}</Text>
-        <Text style={styles.startDate}>21 NOV 2024 </Text>
-        <Text style={styles.traveler}>Journey: Just Me</Text>
-        <Text style={styles.budget}>Budget: Luxury</Text>
+        <Text style={styles.destination}>{trip?.locationInfo?.name}</Text>
+        <Text style={styles.startDate}>{trip?.statDate}</Text>
+        <Text style={styles.traveler}>Journey: {trip?.traveler}</Text>
+        <Text style={styles.budget}>Budget: {trip?.budget}</Text>
       </View>
     </View>
   );
@@ -63,6 +75,6 @@ const styles = StyleSheet.create({
   budget: {
     fontSize: 13,
     fontFamily: "outfit",
-    color: Colors.GRAY
-  }
+    color: Colors.GRAY,
+  },
 });

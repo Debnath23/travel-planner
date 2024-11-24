@@ -28,7 +28,7 @@ const SelectTraveler = () => {
     if (selectedTraveler) {
       setTripData({
         ...tripData,
-        traveler: selectedTraveler,
+        traveler: selectedTraveler.title,
       });
       router.push("/select-date");
     }

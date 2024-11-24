@@ -18,7 +18,7 @@ const UserTripList = ({ userTrips }) => {
       showsHorizontalScrollIndicator={false}
     >
       <View>
-        {userTrips[0]?.locationInfo?.photoRef ? (
+        {!userTrips[0]?.locationInfo?.photoRef ? (
           <Image
             source={{
               uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${userTrips[0]?.locationInfo?.photoRef}&key=${process.env.EXPO_PUBLIC_GO_MAPS_API_KEY}`,
@@ -33,16 +33,16 @@ const UserTripList = ({ userTrips }) => {
         )}
         <View style={styles.content}>
           <Text style={styles.destination}>
-            {userTrips[0]?.tripDetails.destination}
+            {userTrips[0]?.tripPlan?.tripDetails.destination}
           </Text>
           <View style={styles.textContent}>
-            <Text style={styles.startDate}>21 NOV 2024</Text>
+            <Text style={styles.startDate}>{userTrips[0]?.statDate}</Text>
             <View style={styles.travelerContainer}>
               <Image
                 source={require("@/assets/icons/holiday-trip.png")}
                 style={styles.logoImg}
               />
-              <Text style={styles.traveler}>Just Me</Text>
+              <Text style={styles.traveler}>{userTrips[0]?.traveler}</Text>
             </View>
           </View>
           <TouchableOpacity style={styles.button}>
@@ -50,9 +50,10 @@ const UserTripList = ({ userTrips }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.otherTripsContainer}>
-          {userTrips.map((trip, index) => (
-            <UserTripCard trip={trip} key={index} />
-          ))}
+          {userTrips.length > 0 &&
+            userTrips.map((trip, index) => (
+              <UserTripCard trip={trip} key={index} />
+            ))}
         </View>
       </View>
     </ScrollView>
@@ -63,7 +64,7 @@ export default UserTripList;
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 20,
+    marginVertical: 20,
     marginHorizontal: 15,
     backgroundColor: Colors.WHITE,
   },

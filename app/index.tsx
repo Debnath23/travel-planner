@@ -1,18 +1,54 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React from "react";
-import { Colors } from "@/constants/Colors";
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import { Redirect, useRouter } from "expo-router";
-import { auth } from "@/config/firebaseConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Colors } from "@/constants/Colors";
 
 type Props = {};
 
 export default function Index(props: Props) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
-  const user = auth.currentUser;
 
-  if (!user) {
-    return <Redirect href={"/mytrip"} />;
+  const checkAuthStatus = async () => {
+    try {
+      const user = await AsyncStorage.getItem("accessToken");
+      if (user) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+    } catch (error) {
+      console.error("Failed to retrieve auth status", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
+  if (isAuthenticated) {
+    return <Redirect href="/mytrip" />;
+  }
+  
 
   return (
     <View>

@@ -6,21 +6,63 @@ import {
   TouchableOpacity,
   StyleSheet,
   ToastAndroid,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Colors } from "@/constants/Colors";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "@/config/firebaseConfig";
 import { useNavigation } from "@react-navigation/native";
+import axiosInstance from "@/config/axiosInstance";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignUp = () => {
-  const [fullName, setFullName] = useState("");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-
   const navigation = useNavigation();
+
+  const onCreateUser = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    if (!name) {
+      ToastAndroid.show("Name is required.", ToastAndroid.BOTTOM);
+      return;
+    }
+    if (!email) {
+      ToastAndroid.show("Email is required.", ToastAndroid.BOTTOM);
+      return;
+    }
+    if (!password) {
+      ToastAndroid.show("Password is required.", ToastAndroid.BOTTOM);
+      return;
+    }
+
+    try {
+      const requestBody = { name, email, password };
+      const response = await axiosInstance.post("/auth/register", requestBody);
+
+      if (response.status === 201) {
+        const token = response.data.accessToken;
+
+        if (token) {
+          await AsyncStorage.setItem("isLoggedIn", "true");
+          window.dispatchEvent(new Event("loginStatusChanged"));
+          router.replace("/mytrip");
+        }
+      } else {
+        ToastAndroid.show("Something went wrong!", ToastAndroid.BOTTOM);
+      }
+    } catch (error: any) {
+      const errorMessage =
+        error.response?.data?.message || "An error occurred. Please try again.";
+      ToastAndroid.show(errorMessage, ToastAndroid.BOTTOM);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     navigation.setOptions({
@@ -28,70 +70,63 @@ const SignUp = () => {
     });
   }, [navigation]);
 
-  const onCreateUser = () => {
-    if (!fullName && !email && !password) {
-      ToastAndroid.show("Please enter all details.", ToastAndroid.BOTTOM);
-      return;
-    }
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        router.replace("/mytrip");
-      })
-      .catch((error) => {
-        const errorMessage = error.message;
-        if (errorMessage) {
-          ToastAndroid.show("Invalid Credentials!", ToastAndroid.BOTTOM);
-        }
-      });
-  };
-
   return (
-    <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.push("/")} style={styles.backBtn}>
-        <Ionicons name="arrow-back" size={24} color="black" />
-      </TouchableOpacity>
-      <Text style={styles.header}>Create New Account</Text>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <View style={styles.container}>
+          <TouchableOpacity
+            onPress={() => router.push("/")}
+            style={styles.backBtn}
+          >
+            <Ionicons name="arrow-back" size={24} color="black" />
+          </TouchableOpacity>
+          <Text style={styles.header}>Create New Account</Text>
 
-      {/* Full Name Input */}
-      <TextInput
-        placeholder="Full Name"
-        placeholderTextColor={Colors.GRAY}
-        style={styles.input}
-        value={fullName}
-        onChangeText={(value) => setFullName(value)}
-      />
-      {/* Username Input */}
-      <TextInput
-        placeholder="Email"
-        placeholderTextColor={Colors.GRAY}
-        style={styles.input}
-        value={email}
-        onChangeText={(value) => setEmail(value)}
-      />
-      {/* Password Input */}
-      <TextInput
-        placeholder="Password"
-        placeholderTextColor={Colors.GRAY}
-        secureTextEntry
-        value={password}
-        style={styles.input}
-        onChangeText={(value) => setPassword(value)}
-      />
+          {/* Full Name Input */}
+          <TextInput
+            placeholder="Full Name"
+            placeholderTextColor={Colors.GRAY}
+            style={styles.input}
+            value={name}
+            onChangeText={(value) => setName(value)}
+          />
+          {/* Username Input */}
+          <TextInput
+            placeholder="Email"
+            placeholderTextColor={Colors.GRAY}
+            style={styles.input}
+            value={email}
+            onChangeText={(value) => setEmail(value)}
+          />
+          {/* Password Input */}
+          <TextInput
+            placeholder="Password"
+            placeholderTextColor={Colors.GRAY}
+            secureTextEntry
+            value={password}
+            style={styles.input}
+            onChangeText={(value) => setPassword(value)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
 
-      {/* Create Account Button */}
-      <TouchableOpacity style={styles.button} onPress={onCreateUser}>
-        <Text style={styles.buttonText}>Create Account</Text>
-      </TouchableOpacity>
+          {/* Create Account Button */}
+          <TouchableOpacity style={styles.button} onPress={onCreateUser}>
+            <Text style={styles.buttonText}>
+              {isLoading ? "Loading..." : "Create Account"}
+            </Text>
+          </TouchableOpacity>
 
-      {/* Back to Sign In Button */}
-      <TouchableOpacity
-        style={styles.secondaryButton}
-        onPress={() => router.push("/sign-in")}
-      >
-        <Text style={styles.secondaryButtonText}>Sign In</Text>
-      </TouchableOpacity>
-    </View>
+          {/* Back to Sign In Button */}
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={() => router.push("/sign-in")}
+          >
+            <Text style={styles.secondaryButtonText}>Sign In</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
