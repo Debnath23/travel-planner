@@ -9,8 +9,10 @@ import {
 import React from "react";
 import { Colors } from "@/constants/Colors";
 import UserTripCard from "@/components/UserTripCard";
+import { useRouter } from "expo-router";
 
 const UserTripList = ({ userTrips }) => {
+  const router = useRouter();
   return (
     <ScrollView
       style={styles.container}
@@ -21,7 +23,7 @@ const UserTripList = ({ userTrips }) => {
         {!userTrips[0]?.locationInfo?.photoRef ? (
           <Image
             source={{
-              uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${userTrips[0]?.locationInfo?.photoRef}&key=${process.env.EXPO_PUBLIC_GO_MAPS_API_KEY}`,
+              uri: userTrips[0]?.locationInfo?.photoRef,
             }}
             style={styles.img}
           />
@@ -45,7 +47,15 @@ const UserTripList = ({ userTrips }) => {
               <Text style={styles.traveler}>{userTrips[0]?.traveler}</Text>
             </View>
           </View>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() =>
+              router.push({
+                pathname: "/trip-details",
+                params: { trip: JSON.stringify(userTrips[0]) },
+              })
+            }
+          >
             <Text style={styles.buttonText}>See your detailed plan</Text>
           </TouchableOpacity>
         </View>

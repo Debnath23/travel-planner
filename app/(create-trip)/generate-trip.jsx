@@ -88,7 +88,7 @@ const GenerateTrip = () => {
       <Text style={styles.title}>Please Wait...</Text>
       <Text style={styles.subTitle}>We are working to generate your trip</Text>
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size={100} color="#0000ff" />
+        <ActivityIndicator size={100} color="#0000" />
       </View>
       <Text style={styles.text}>Don't Go Back</Text>
     </View>

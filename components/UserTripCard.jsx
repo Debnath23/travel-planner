@@ -5,7 +5,7 @@ import { Colors } from "@/constants/Colors";
 const UserTripCard = ({ trip }) => {
   return (
     <View style={styles.container}>
-      {trip?.locationInfo?.photoRef ? (
+      {!trip?.locationInfo?.photoRef ? (
         <Image
           source={{
             uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${trip?.locationInfo?.photoRef}&key=${process.env.EXPO_PUBLIC_GO_MAPS_API_KEY}`,

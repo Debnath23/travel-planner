@@ -41,42 +41,48 @@ export default function MyTrip() {
 
   return (
     <View
-      style={{
-        height: "100%",
-        backgroundColor: Colors.WHITE,
-      }}
-    >
-      {loading && <ActivityIndicator size={"large"} color={Colors.PRIMARY} />}
-      <View style={styles.label}>
-        <Text style={styles.labelText}>My Trips</Text>
-        <TouchableOpacity onPress={() => router.push("/search-place")}>
-          <Ionicons name="add-circle" size={43} color="black" />
+    style={{
+      height: "100%",
+      backgroundColor: Colors.WHITE,
+    }}
+  >
+    <View style={styles.label}>
+      <Text style={styles.labelText}>My Trips</Text>
+      <TouchableOpacity onPress={() => router.push("/search-place")}>
+        <Ionicons name="add-circle" size={43} color="black" />
+      </TouchableOpacity>
+    </View>
+    
+    {loading ? (
+      <View
+        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+      >
+        <ActivityIndicator size={100} color="#000" />
+      </View>
+    ) : userTrips?.length === 0 ? (
+      <View style={styles.container}>
+        <Ionicons
+          name="location-sharp"
+          size={30}
+          color="black"
+          style={styles.icons}
+        />
+        <Text style={styles.title}>No Trips Planned Yet</Text>
+        <Text style={styles.subtitle}>
+          Looks like it’s time to plan a new travel experience! Get started below.
+        </Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => router.push("/search-place")}
+        >
+          <Text style={styles.buttonText}>Start a New Trip</Text>
         </TouchableOpacity>
       </View>
-      {userTrips?.length == 0 ? (
-        <View style={styles.container}>
-          <Ionicons
-            name="location-sharp"
-            size={30}
-            color="black"
-            style={styles.icons}
-          />
-          <Text style={styles.title}>No Trips Planned Yet</Text>
-          <Text style={styles.subtitle}>
-            Looks like it’s time to plan a new travel experience! Get started
-            below.
-          </Text>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => router.push("/search-place")}
-          >
-            <Text style={styles.buttonText}>Start a New Trip</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <UserTripList userTrips={userTrips} />
-      )}
-    </View>
+    ) : (
+      <UserTripList userTrips={userTrips} />
+    )}
+  </View>
+  
   );
 }
 
