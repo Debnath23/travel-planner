@@ -1,8 +1,10 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import { Image, StyleSheet, Text, View, ScrollView } from "react-native";
+import React, { useLayoutEffect, useState } from "react";
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { Colors } from "@/constants/Colors";
-import FlightInfo from "../../components/FlightInfo";
+import FlightInfo from "@/components/FlightInfo";
+import HotelList from "@/components/HotelList";
+import TripPlan from "@/components/TripPlan";
 
 function parseTripData(rawData) {
   if (typeof rawData !== "string") {
@@ -32,7 +34,7 @@ const TripDetails = () => {
 
     if (trip) {
       const parsedTrip = parseTripData(trip);
-
+      
       if (parsedTrip) {
         setTripDetails(parsedTrip);
       } else {
@@ -44,7 +46,11 @@ const TripDetails = () => {
   }, [navigation, trip]);
 
   return (
-    <View style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      showsHorizontalScrollIndicator={false}
+    >
       <Image
         source={require("@/assets/images/travel.jpg")}
         style={styles.img}
@@ -62,9 +68,23 @@ const TripDetails = () => {
           />
           <Text style={styles.traveler}>{tripDetails?.traveler}</Text>
         </View>
-        <FlightInfo flightInfo={tripDetails?.tripPlan?.flights} />
+        {tripDetails?.tripPlan?.flights ? (
+          <FlightInfo flightInfo={tripDetails.tripPlan.flights} />
+        ) : (
+          <Text>No flight information available.</Text>
+        )}
+        {tripDetails?.tripPlan?.hotels ? (
+          <HotelList hotelInfo={tripDetails.tripPlan.hotels} />
+        ) : (
+          <Text>No hotel information available.</Text>
+        )}
+        {tripDetails?.tripPlan?.dailyItinerary ? (
+          <TripPlan planInfo={tripDetails.tripPlan?.dailyItinerary} />
+        ) : (
+          <Text>Trip plan is not available.</Text>
+        )}
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -73,6 +93,7 @@ export default TripDetails;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: 'auto'
   },
   img: {
     width: "100%",

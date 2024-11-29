@@ -1,0 +1,46 @@
+[
+    {
+        "activities": [
+            {
+                "activity": "Arrive at Trivandrum Airport, transfer to hotel, check-in",
+                "time": "Morning"
+            },
+            {
+                "activity": "Relax on Kovalam Beach",
+                "time": "Afternoon"
+            },
+            {
+                "activity": "Arrive at Trivandrum Airport, transfer to hotel, check-in",
+                "time": "Morning"
+            },
+            {
+                "activity": "Relax on Kovalam Beach",
+                "time": "Afternoon"
+            }
+        ],
+        "date": "2024-11-24",
+        "day": 1
+    },
+    {
+        "activities": [
+            {
+                "activity": "Arrive at Trivandrum Airport, transfer to hotel, check-in",
+                "time": "Morning"
+            },
+            {
+                "activity": "Relax on Kovalam Beach",
+                "time": "Afternoon"
+            },
+            {
+                "activity": "Arrive at Trivandrum Airport, transfer to hotel, check-in",
+                "time": "Morning"
+            },
+            {
+                "activity": "Relax on Kovalam Beach",
+                "time": "Afternoon"
+            }
+        ],
+        "date": "2024-11-25",
+        "day": 2
+    }
+]
