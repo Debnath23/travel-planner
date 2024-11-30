@@ -1,30 +1,39 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import React from "react";
 import { Colors } from "@/constants/Colors";
+import { useRouter } from "expo-router";
 
 const UserTripCard = ({ trip }) => {
+  const router = useRouter();
   return (
-    <View style={styles.container}>
-      {!trip?.locationInfo?.photoRef ? (
-        <Image
-          source={{
-            uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${trip?.locationInfo?.photoRef}&key=${process.env.EXPO_PUBLIC_GO_MAPS_API_KEY}`,
-          }}
-          style={styles.img}
-        />
-      ) : (
-        <Image
-          source={require("@/assets/images/travel.jpg")}
-          style={styles.img}
-        />
-      )}
-      <View>
-        <Text style={styles.destination}>{trip?.locationInfo?.name}</Text>
-        <Text style={styles.startDate}>{trip?.statDate}</Text>
-        <Text style={styles.traveler}>Journey: {trip?.traveler}</Text>
-        <Text style={styles.budget}>Budget: {trip?.budget}</Text>
+    <TouchableOpacity onPress={() =>
+      router.push({
+        pathname: "/trip-details",
+        params: { trip: JSON.stringify(trip) },
+      })
+    }>
+      <View style={styles.container}>
+        {!trip?.locationInfo?.photoRef ? (
+          <Image
+            source={{
+              uri: `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photo_reference=${trip?.locationInfo?.photoRef}&key=${process.env.EXPO_PUBLIC_GO_MAPS_API_KEY}`,
+            }}
+            style={styles.img}
+          />
+        ) : (
+          <Image
+            source={require("@/assets/images/travel.jpg")}
+            style={styles.img}
+          />
+        )}
+        <View>
+          <Text style={styles.destination}>{trip?.locationInfo?.name}</Text>
+          <Text style={styles.startDate}>{trip?.statDate}</Text>
+          <Text style={styles.traveler}>Journey: {trip?.traveler}</Text>
+          <Text style={styles.budget}>Budget: {trip?.budget}</Text>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 

@@ -5,14 +5,14 @@ import { Colors } from "@/constants/Colors";
 const HotelList = ({ hotelInfo }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Hotel Recomendation</Text>
+      <Text style={styles.title}>🏨 Hotel Recomendation</Text>
       <FlatList
         style={styles.itemContainer}
         data={hotelInfo}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
         renderItem={({ item, index }) => (
-          <View key={index}>
+          <View key={index} style={styles.hotelCard}>
             <Image
               source={require("@/assets/images/hotel.jpg")}
               style={styles.img}
@@ -22,7 +22,8 @@ const HotelList = ({ hotelInfo }) => {
                 {item?.hotelName || "Hyatt Regency"}
               </Text>
               <Text style={styles.desc}>
-                {item?.description || "Hyatt Regency"}
+                {item?.description ||
+                  "Hyatt Regency, known for its comfortable rooms and excellent service."}
               </Text>
               <View style={styles.textContainer}>
                 <Text style={styles.hotelText}>⭐ {item.rating}</Text>
@@ -42,7 +43,6 @@ export default HotelList;
 const styles = StyleSheet.create({
   container: {
     marginTop: 20,
-    height: "auto",
   },
   title: {
     fontFamily: "outfit-bold",
@@ -50,37 +50,39 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     marginVertical: 20,
+  },
+  hotelCard: {
+    width: 320,
     marginRight: 10,
-    height: 'auto',
-    
   },
   img: {
-    width: 320,
+    width: "100%",
     height: 180,
-    objectFit: "cover",
     borderRadius: 15,
   },
   content: {
-    paddingHorizontal: 5,
+    padding: 10,
+    borderRadius: 10,
   },
   hotelName: {
     fontFamily: "outfit-bold",
-    color: Colors.GRAY,
     fontSize: 20,
-    paddingTop: 5,
+    color: Colors.GRAY,
+    marginBottom: 2,
   },
   desc: {
     fontFamily: "outfit-medium",
+    fontSize: 16,
     color: Colors.GRAY,
-    fontSize: 17,
+    lineHeight: 22,
   },
   textContainer: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between'
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 3,
   },
   hotelText: {
     fontFamily: "outfit",
     color: Colors.GRAY,
-  }
+  },
 });
