@@ -5,6 +5,9 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import "react-native-reanimated";
 import { CreateTripProvider } from "@/context/CreateTripContext";
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
+import { store, persistor } from '@/redux/store';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,13 +29,17 @@ export default function RootLayout() {
   }
 
   return (
-    <CreateTripProvider>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-      </Stack>
-      <StatusBar style="dark" />
-    </CreateTripProvider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+      <CreateTripProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+        </Stack>
+        <StatusBar style="dark" />
+      </CreateTripProvider>
+      </PersistGate>
+    </Provider>
   );
 }

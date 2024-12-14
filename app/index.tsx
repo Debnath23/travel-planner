@@ -18,22 +18,17 @@ export default function Index(props: Props) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
-  const checkAuthStatus = async () => {
-    try {
-      const user = await AsyncStorage.getItem("accessToken");
-      if (user) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
-    } catch (error) {
-      console.error("Failed to retrieve auth status", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const accessToken = await AsyncStorage.getItem("accessToken");
+        setIsAuthenticated(!!accessToken);
+      } catch (error) {
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
     checkAuthStatus();
   }, []);
 
@@ -48,7 +43,6 @@ export default function Index(props: Props) {
   if (isAuthenticated) {
     return <Redirect href="/mytrip" />;
   }
-  
 
   return (
     <View>
@@ -86,7 +80,7 @@ const styles = StyleSheet.create({
 
   image: {
     width: "100%",
-    height: 500,
+    height: 670,
   },
 
   tagLine: {

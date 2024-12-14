@@ -11,6 +11,7 @@ import { Colors } from "@/constants/Colors";
 import { CreateTripContext } from "@/context/CreateTripContext";
 import CalendarPicker from "react-native-calendar-picker";
 import moment from "moment";
+
 const SelectDate = () => {
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);

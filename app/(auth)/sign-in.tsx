@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import axiosInstance from "@/config/axiosInstance";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { UserInfoContext } from "@/context/UserInfoContext";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/userSlice";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -22,6 +25,9 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
+
+  const {setUserData} = useContext(UserInfoContext);
 
   const onSignIn = async () => {
     if (isLoading) return;
@@ -41,16 +47,15 @@ const SignIn = () => {
       const response = await axiosInstance.post("/auth/login", requestBody);
 
       if (response.status === 201) {
-        console.log("Login successful:", response.data);
-        const { accessToken, refreshToken } = response.data;
+        const { accessToken, refreshToken, user } = response.data;
 
         await AsyncStorage.setItem("accessToken", accessToken);
         await AsyncStorage.setItem("refreshToken", refreshToken);
 
+        dispatch(setUser(user));
         router.replace("/mytrip");
       }
     } catch (error: any) {
-      console.log(error);
       ToastAndroid.show("Login failed. Please try again.", ToastAndroid.BOTTOM);
     } finally {
       setIsLoading(false);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   FlatList,
   StyleSheet,
@@ -6,14 +6,15 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
+} from "react-native";
+import Feather from "@expo/vector-icons/Feather";
 
 const GoMapsAutocomplete = ({
   apiKey,
-  placeholder = 'Search',
+  placeholder = "Search",
   onPlaceSelect,
 }) => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -38,7 +39,7 @@ const GoMapsAutocomplete = ({
         setSuggestions([]);
       }
     } catch (error) {
-      console.error('Error fetching suggestions:', error);
+      console.error("Error fetching suggestions:", error);
       setSuggestions([]);
     } finally {
       setLoading(false);
@@ -56,15 +57,19 @@ const GoMapsAutocomplete = ({
 
   return (
     <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        value={query}
-        onChangeText={(text) => {
-          setQuery(text);
-          fetchSuggestions(text);
-        }}
-      />
+      <View style={styles.searchBar}>
+        <Feather name="search" size={24} color="#ccc" />
+        <TextInput
+          style={styles.input}
+          placeholder={placeholder}
+          value={query}
+          onChangeText={(text) => {
+            setQuery(text);
+            fetchSuggestions(text);
+          }}
+        />
+      </View>
+
       {loading && <Text style={styles.loading}>Loading...</Text>}
       <FlatList
         data={suggestions}
@@ -87,21 +92,40 @@ export default GoMapsAutocomplete;
 const styles = StyleSheet.create({
   container: {
     marginTop: 20,
+    paddingHorizontal: 0.5,
+  },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    paddingHorizontal: 10,
+    height: 45,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
   input: {
-    height: 40,
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 5,
+    flex: 1,
+    height: "100%",
     paddingHorizontal: 10,
+    fontSize: 16,
+    color: "#333",
   },
   suggestion: {
-    padding: 10,
+    padding: 12,
+    backgroundColor: "#f9f9f9",
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: "#eee",
   },
   loading: {
     padding: 10,
-    color: 'gray',
+    fontSize: 14,
+    color: "gray",
+    textAlign: "center",
   },
 });
